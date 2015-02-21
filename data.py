@@ -64,12 +64,20 @@ class Sphere:
     def __repr__(self):
         return self.__str__()
 
+
 class Circle:
     def __init__(self, center, radius):
         self.center = center
         self.radius = radius
+
     def __eq__(self, other):
         return (self.center == other.center) and epsilon_equal(self.radius, other.radius)
+
+    def __str__(self):
+        return "<ct:" + self.center.__str__() + " r:" + self.radius.__str__() + ">"
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Color:

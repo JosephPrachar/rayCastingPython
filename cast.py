@@ -107,7 +107,7 @@ def compute_sphere_on_window(sphere, eye):
     # 2.
     t = (-1 * eye.z) / eye_to_sphere.z
     eye_to_window = vm.scale_vector(eye_to_sphere, t)
-    circle_center = vm.translate_point(eye, eye)
+    circle_center = vm.translate_point(eye, eye_to_window)
 
     # 3.
     radius = (sphere.radius * vm.length_vector(eye_to_window)) / vm.length_vector(eye_to_sphere)
