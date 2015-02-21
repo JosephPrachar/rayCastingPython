@@ -9,6 +9,7 @@ vm = vector_math
 #global
 max_pixel_val = 255
 
+@profile
 def cast_ray(ray, sphere_list, color, light, eye):
   hits = col.find_intersection_points(sphere_list, ray)
   if (len(hits) == 0):
@@ -26,6 +27,7 @@ def cast_ray(ray, sphere_list, color, light, eye):
 
     return color_add(ambientColor, pointLighting)
 
+@profile
 def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light):
   deltaX = float(max_x - min_x) / width
   deltaY = float(max_y - min_y) / height
@@ -39,7 +41,7 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
       rayThroughRec = data.Ray(eye_point, vectorToCast)
 
       result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point)
-      print_scaled_pixel(result)
+      #print_scaled_pixel(result)
             
       x += deltaX
       count += 1
@@ -69,6 +71,7 @@ def compute_ambient_lighting(sphere, color):
   scaledAC = color_scale(ambientColor, sphere.finish.ambient)
   return scaledAC
 
+@profile
 def compute_point_and_specular_light(intersection_point, sphere, light, sphere_list, eye):
   # Point light
   normal = col.sphere_normal_at_point(sphere, intersection_point) # N
