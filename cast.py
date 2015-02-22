@@ -26,6 +26,8 @@ def cast_ray(ray, sphere_list, color, light, eye):
 
 
 def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light):
+    circle_projections = [project_sphere_on_window(cur_sphere, eye_point) for cur_sphere in sphere_list]
+
     deltaX = float(max_x - min_x) / width
     deltaY = float(max_y - min_y) / height
     y = max_y
@@ -33,11 +35,16 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
     count = 0
     while y > min_y:
         while x < max_x:
-            pointToCastThrough = data.Point(x, y, 0)
-            vectorToCast = vm.vector_from_to(eye_point, pointToCastThrough)
-            rayThroughRec = data.Ray(eye_point, vectorToCast)
+            circle_hits = point_in_circles(circle_projections, data.Point(x, y, 0)) # gets all intersecting spheres
+            result = data.Color(1,1,1)
 
-            result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point)
+            if len(circle_hits) != 0:   # if the current point actually hits a sphere
+                pointToCastThrough = data.Point(x, y, 0)
+                vectorToCast = vm.vector_from_to(eye_point, pointToCastThrough)
+                rayThroughRec = data.Ray(eye_point, vectorToCast)
+
+                result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point)
+
             print_scaled_pixel(result)
 
             x += deltaX
@@ -96,7 +103,7 @@ def compute_point_and_specular_light(intersection_point, sphere, light, sphere_l
     return vm.color_add(pointColor, specColor)
 
 
-def compute_sphere_on_window(sphere, eye):
+def project_sphere_on_window(sphere, eye):
     # 1. find line from eye to center of sphere
     # 2. plug in z=0 to line to find center of circle on window
     # 3. use similar triangles to find radius of circle on window
@@ -117,6 +124,18 @@ def compute_sphere_on_window(sphere, eye):
     # this will allow cast ray to not have to run find_intersection_points() to get the nearest sphere
 
     return data.Circle(circle_center, radius)
+
+def point_in_circles(circles, pt):
+    return [c for c in circles if point_in_circle(c, pt)]
+
+def point_in_circle(circle, pt):
+    if (circle.center.z != pt.z):
+        return False
+
+    if (vm.distance_point(circle.center, pt) <= circle.radius):
+        return True
+    else:
+        return False
 
   
   

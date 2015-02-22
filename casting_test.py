@@ -1,8 +1,11 @@
 import data
 import cast
-
+import datetime
+import sys
 
 def main():
+    start_time = datetime.datetime.now()
+
     # create scene
     eye = data.Point(0.0, 0.0, -14.0)
     spheres = [data.Sphere(data.Point(.5, 1.5, -3.0), 0.5, data.Color(1, 0, 0), data.Finish(.4, .4, .5, .05)),
@@ -21,6 +24,12 @@ def main():
     print 255
 
     cast.cast_all_rays(-10, 10, -7.5, 7.5, width, height, eye, spheres, ambientColor, pointLight)
+
+    finish_time = datetime.datetime.now()
+    run_time = finish_time - start_time
+    print >> sys.stderr, run_time
+
+    # current run time ~8.6 sec
 
 
 if __name__ == "__main__":

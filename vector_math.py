@@ -1,5 +1,6 @@
 import data
 import funcs
+import math
 
 
 def scale_vector(vector, scalar):
@@ -11,7 +12,8 @@ def dot_vector(vector1, vector2):
 
 
 def length_vector(vector):
-    return funcs.hypotenuse(vector.z, funcs.hypotenuse(vector.x, vector.y))
+    #return funcs.hypotenuse(vector.z, funcs.hypotenuse(vector.x, vector.y))
+    return math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
 
 
 def normalize_vector(vector):
@@ -37,7 +39,6 @@ def vector_from_to(from_point, to_point):
 # global
 max_pixel_val = 255
 
-
 def color_mult(one, two):
     return data.Color(one.red * two.red, one.green * two.green, one.blue * two.blue)
 
@@ -57,3 +58,6 @@ def color_bounds_check(color):
         color.green = 1.0
     if color.blue > 1.0:
         color.blue = 1.0
+
+def distance_point(pt_one, pt_two):
+    return length_vector(vector_from_to(pt_one, pt_two))
