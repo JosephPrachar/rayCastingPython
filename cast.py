@@ -2,6 +2,7 @@ import collisions
 import vector_math
 import data
 import sys
+import datetime
 
 # shorten libs
 col = collisions
@@ -34,11 +35,21 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
     deltaY = float(max_y - min_y) / height
     y = max_y
     x = min_x
-
     total_pixels = width * height
-    print >> sys.stderr, total_pixels, 'rays to cast on ', len(sphere_list), 'spheres'
-    print >> sys.stderr, 'start' + (' ' * 41) + 'done'
-    print >> sys.stderr, ('|' + (' ' * 9)) * 6
+
+    before_time = datetime.datetime.now()
+    for i in range(1000):
+        cast_ray(data.Ray(eye_point, vm.vector_from_to(eye_point, sphere_list[0].center)),
+             sphere_list, color, light, eye_point)
+    after_time = datetime.datetime.now()
+    delta_time = after_time - before_time
+    low_est = delta_time * (total_pixels / 1000)
+    high_est = low_est * 2
+
+    print total_pixels, 'rays to cast on ', len(sphere_list), 'spheres'
+    print 'time estimate: ', str(low_est), "- ", str(high_est)
+    print 'start' + (' ' * 41) + 'done'
+    print ('|' + (' ' * 9)) * 6
 
     count = 0
     while y > min_y:
