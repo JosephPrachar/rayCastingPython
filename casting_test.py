@@ -3,6 +3,7 @@ import cast
 import datetime
 import sys
 
+
 def main():
     start_time = datetime.datetime.now()
 

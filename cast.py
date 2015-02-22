@@ -1,32 +1,28 @@
 import collisions
 import vector_math
 import data
+import sys
 
 # shorten libs
 col = collisions
 vm = vector_math
 
 
-def cast_ray(ray, sphere_list, color, light, eye):
-    hits = col.find_intersection_points(sphere_list, ray)
-    if (len(hits) == 0):
-        return data.Color(1.0, 1.0, 1.0)
-    else:
-        small = 0
-        for i in range(1, len(hits)):
-            cur = vm.length_vector(vm.difference_point(ray.pt, hits[i][1]))
-            smallest = vm.length_vector(vm.difference_point(ray.pt, hits[small][1]))
-            if cur < smallest:
-                small = i
+def cast_ray(ray, sphere_list, color, light, eye, collision_sphere):
+    hits = col.sphere_intersection_point_tuple(ray, collision_sphere)
 
-        ambientColor = compute_ambient_lighting(hits[small][0], color)
-        pointLighting = compute_point_and_specular_light(hits[small][1], hits[small][0], light, sphere_list, eye)
+    ambientColor = compute_ambient_lighting(hits[0], color)
+    pointLighting = compute_point_and_specular_light(hits[1], hits[0], light, sphere_list, eye)
 
-        return vm.color_add(ambientColor, pointLighting)
+    return vm.color_add(ambientColor, pointLighting)
 
 
 def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light):
     circle_projections = [project_sphere_on_window(cur_sphere, eye_point) for cur_sphere in sphere_list]
+    # circle_projections = (sphere, circle_projection, dist from eye to sphere)
+
+    # todo: sort circle_projections by sphere distance from eye
+    sorted(circle_projections, key=lambda dist: dist[2])
 
     deltaX = float(max_x - min_x) / width
     deltaY = float(max_y - min_y) / height
@@ -35,15 +31,16 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
     count = 0
     while y > min_y:
         while x < max_x:
-            circle_hits = point_in_circles(circle_projections, data.Point(x, y, 0)) # gets all intersecting spheres
-            result = data.Color(1,1,1)
+            circle_hits = point_in_circles(circle_projections, data.Point(x, y, 0))  # gets all intersecting spheres
+            result = data.Color(1, 1, 1)
 
-            if len(circle_hits) != 0:   # if the current point actually hits a sphere
+            if len(circle_hits) != 0:  # if the current point actually hits a sphere run computation
                 pointToCastThrough = data.Point(x, y, 0)
                 vectorToCast = vm.vector_from_to(eye_point, pointToCastThrough)
                 rayThroughRec = data.Ray(eye_point, vectorToCast)
 
-                result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point)
+                # print >> sys.stderr, circle_hits
+                result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point, circle_hits[0][0])
 
             print_scaled_pixel(result)
 
@@ -71,7 +68,7 @@ def compute_point_and_specular_light(intersection_point, sphere, light, sphere_l
     scaledNormal = vm.scale_vector(normal, .01)
     p_sub_e = vm.translate_point(intersection_point, scaledNormal)  # P sub E
     l_sub_dir = vm.normalize_vector(vm.vector_from_to(p_sub_e, light.pt))  # L sub dir
-    l_dot_n = vm.dot_vector(normal, l_sub_dir)  #if neg diffuse is zero
+    l_dot_n = vm.dot_vector(normal, l_sub_dir)  # if neg diffuse is zero
 
     if l_dot_n <= 0:  # point on dark side of sphere
         return data.Color(0, 0, 0)
@@ -117,16 +114,20 @@ def project_sphere_on_window(sphere, eye):
     circle_center = vm.translate_point(eye, eye_to_window)
 
     # 3.
-    radius = (sphere.radius * vm.length_vector(eye_to_window)) / vm.length_vector(eye_to_sphere)
+    dist_to_sphere = vm.length_vector(eye_to_sphere)
+    radius = (sphere.radius * vm.length_vector(eye_to_window)) / dist_to_sphere
 
-    # possible addition to function
-    # return a tuple of (circle, dist(eye, sphere)
+    # DONE: todo: possible addition to function
+    # return a tuple of (sphere, circle, dist(eye, sphere))
     # this will allow cast ray to not have to run find_intersection_points() to get the nearest sphere
 
-    return data.Circle(circle_center, radius)
+    return sphere, data.Circle(circle_center, radius), dist_to_sphere
 
-def point_in_circles(circles, pt):
-    return [c for c in circles if point_in_circle(c, pt)]
+
+def point_in_circles(circle_tuple, pt):
+    # return [(sphere, circle, dist) for (sphere, circle, dist) in circle_tuple if point_in_circle(circle, pt)]
+    return [tuple for tuple in circle_tuple if point_in_circle(tuple[1], pt)]
+
 
 def point_in_circle(circle, pt):
     if (circle.center.z != pt.z):

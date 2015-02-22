@@ -96,24 +96,25 @@ class Testing(unittest.TestCase):
         self.assertEqual(one == val, True)
 
     def test_project_sphere_1(self):
-        sphere = data.Sphere(data.Point(3,-3, 0), 1, data.Color(1,1,1), data.Finish(.4, .4, .5, .05))
+        sphere = data.Sphere(data.Point(3, -3, 0), 1, data.Color(1, 1, 1), data.Finish(.4, .4, .5, .05))
         circle = cast.project_sphere_on_window(sphere, eye)
         self.assertTrue(circle.center == sphere.center and circle.radius == sphere.radius)
 
     def test_project_sphere_2(self):
-        sphere = data.Sphere(data.Point(1,2, 14), 1, data.Color(1,1,1), data.Finish(.4, .4, .5, .05))
+        sphere = data.Sphere(data.Point(1, 2, 14), 1, data.Color(1, 1, 1), data.Finish(.4, .4, .5, .05))
         circle = cast.project_sphere_on_window(sphere, eye)
-        self.assertTrue(circle.center == data.Point(.5,1,0) and circle.radius == .5)
+        self.assertTrue(circle.center == data.Point(.5, 1, 0) and circle.radius == .5)
 
     def test_in_circle_1(self):
-        circle = data.Circle(data.Point(0,0, 0), 1)
-        point = data.Point(1,0,0)
+        circle = data.Circle(data.Point(0, 0, 0), 1)
+        point = data.Point(1, 0, 0)
         self.assertTrue(cast.point_in_circle(circle, point))
 
     def test_in_circle_2(self):
-        circle = data.Circle(data.Point(0,0, 0), 1)
-        point = data.Point(2,0,0)
+        circle = data.Circle(data.Point(0, 0, 0), 1)
+        point = data.Point(2, 0, 0)
         self.assertFalse(cast.point_in_circle(circle, point))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -29,6 +29,10 @@ def sphere_intersection_point(ray, sphere):
     return vm.translate_point(ray.pt, vm.scale_vector(ray.dir, t))
 
 
+def sphere_intersection_point_tuple(ray, sphere):
+    return sphere, sphere_intersection_point(ray, sphere)
+
+
 def find_intersection_points(sphere_list, ray):
     toReturn = []
     for i in sphere_list:
