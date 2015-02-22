@@ -1,6 +1,5 @@
 import sys
 import datetime
-
 import collisions
 import vector_math
 import data
@@ -14,13 +13,21 @@ vm = vector_math
 max_pixel_val = 255
 
 
-def cast_ray(ray, sphere_list, color, light, eye, collision_sphere):
-    hits = col.sphere_intersection_point_tuple(ray, collision_sphere)
-    if hits[1] is None:
+def cast_ray(ray, sphere_list, color, light, eye, collision_spheres):
+    hits = col.find_intersection_points(collision_spheres, ray)
+    if len(hits)== 0:
         return cast_ray_complete(ray, sphere_list, color, light, eye)
 
-    ambientColor = compute_ambient_lighting(hits[0], color)
-    pointLighting = compute_point_and_specular_light(hits[1], hits[0], light, sphere_list, eye)
+    small = 0
+    for i in range(1, len(hits)):
+        cur = vm.length_vector(vm.difference_point(ray.pt, hits[i][1]))
+        smallest = vm.length_vector(vm.difference_point(ray.pt, hits[small][1]))
+        if cur < smallest:
+            small = i
+
+
+    ambientColor = compute_ambient_lighting(hits[small][0], color)
+    pointLighting = compute_point_and_specular_light(hits[small][1], hits[small][0], light, sphere_list, eye)
 
     return vm.color_add(ambientColor, pointLighting)
 
@@ -52,12 +59,12 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
     total_pixels = width * height
 
     before_time = datetime.datetime.now()
-    for i in range(1000):
-        cast_ray(data.Ray(eye_point, vm.vector_from_to(eye_point, sphere_list[0].center)),
+    for i in range(100):
+        cast_ray_complete(data.Ray(eye_point, vm.vector_from_to(eye_point, sphere_list[0].center)),
                  sphere_list, color, light, eye_point)
     after_time = datetime.datetime.now()
     delta_time = after_time - before_time
-    low_est = delta_time * int(total_pixels / 1000)
+    low_est = delta_time * int(total_pixels / 100)
     high_est = low_est * 2
 
     print total_pixels, 'rays to cast on ', len(sphere_list), 'spheres'
@@ -81,13 +88,13 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
                 vectorToCast = vm.vector_from_to(eye_point, pointToCastThrough)
                 rayThroughRec = data.Ray(eye_point, vectorToCast)
 
-                result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point, circle_hits[0][0])
+                result = cast_ray_complete(rayThroughRec, sphere_list, color, light, eye_point) #, circle_hits)
 
             print_scaled_pixel(result, output_file)
 
             x += deltaX
             count += 1
-            if count % 1000:
+            if count % 500:
                 if count > total_pixels / 50:
                     count = 0
                     sys.stderr.write('=')
@@ -173,7 +180,7 @@ def project_sphere_on_window(sphere, eye):
 
 def point_in_circles(circle_tuple, pt):
     # return [(sphere, circle, dist) for (sphere, circle, dist) in circle_tuple if point_in_circle(circle, pt)]
-    return [tuple for tuple in circle_tuple if point_in_circle(tuple[1], pt)]
+    return [tuple[0] for tuple in circle_tuple if point_in_circle(tuple[1], pt)]
 
 
 def point_in_circle(circle, pt):
