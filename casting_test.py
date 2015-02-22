@@ -1,5 +1,4 @@
 import datetime
-import sys
 
 import data
 import cast
@@ -20,18 +19,17 @@ def main():
     width = 1024 / scale
     height = 768 / scale
 
-    # ppm p3 header
-    print "P3"
-    print width, " ", height
-    print 255
+    with open('image.ppm', 'w') as f:
+        # ppm p3 header
+        f.write("P3\n")
+        f.write(str(width) + " " + str(height) + '\n')
+        f.write('255\n')
 
-    cast.cast_all_rays(-10, 10, -7.5, 7.5, width, height, eye, spheres, ambientColor, pointLight)
+        cast.cast_all_rays(-10, 10, -7.5, 7.5, width, height, eye, spheres, ambientColor, pointLight, f)
 
-    finish_time = datetime.datetime.now()
-    run_time = finish_time - start_time
-    print >> sys.stderr, run_time
-
-    # current run time ~8.6 sec
+    end_time = datetime.datetime.now()
+    diff_time = end_time - start_time
+    print diff_time
 
 
 if __name__ == "__main__":

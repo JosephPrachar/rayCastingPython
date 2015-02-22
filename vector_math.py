@@ -1,5 +1,4 @@
 import math
-
 import data
 
 
@@ -12,7 +11,6 @@ def dot_vector(vector1, vector2):
 
 
 def length_vector(vector):
-    # return funcs.hypotenuse(vector.z, funcs.hypotenuse(vector.x, vector.y))
     return math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
 
 

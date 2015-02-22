@@ -28,6 +28,7 @@ class Testing(unittest.TestCase):
         result = cast.cast_ray(ray, spheres, ambientColor, blackPointLight, eye)
         self.assertEqual(result == data.Color(1.0, 1.0, 1.0), True)
 
+
     # Part 2
     def test_cast_ray_3(self):
         ray = data.Ray(eye, vm.vector_from_to(eye, spheres[0].center))
@@ -56,6 +57,7 @@ class Testing(unittest.TestCase):
         val = data.Color(.5, .75, .25)
         self.assertEqual(result == val, True)
 
+
     def test_color_add_1(self):
         one = data.Color(1, 1, 1)
         two = data.Color(.5, .5, .5)
@@ -69,6 +71,7 @@ class Testing(unittest.TestCase):
         result = vm.color_add(one, two)
         val = data.Color(1, 2.5, 4)
         self.assertEqual(result == val, True)
+
 
     def test_color_scale_1(self):
         one = data.Color(1, 1, 1)
@@ -84,6 +87,7 @@ class Testing(unittest.TestCase):
         val = data.Color(0, 0, 0)
         self.assertEqual(result == val, True)
 
+
     def test_color_bounds_1(self):
         one = data.Color(.5, .3, .2)
         vm.color_bounds_check(one)
@@ -95,6 +99,7 @@ class Testing(unittest.TestCase):
         vm.color_bounds_check(one)
         val = data.Color(1, 1, 1)
         self.assertEqual(one == val, True)
+
 
     def test_project_sphere_1(self):
         sphere = data.Sphere(data.Point(3, -3, 0), 1, data.Color(1, 1, 1), data.Finish(.4, .4, .5, .05))

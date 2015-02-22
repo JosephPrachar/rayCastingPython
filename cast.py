@@ -1,10 +1,17 @@
+import sys
+import datetime
+
 import collisions
 import vector_math
 import data
 
+
 # shorten libs
 col = collisions
 vm = vector_math
+
+# global
+max_pixel_val = 255
 
 
 def cast_ray(ray, sphere_list, color, light, eye, collision_sphere):
@@ -36,17 +43,33 @@ def cast_ray_complete(ray, sphere_list, color, light, eye):
         return vm.color_add(ambientColor, pointLighting)
 
 
-def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light):
+def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light, output_file):
     circle_projections = [project_sphere_on_window(cur_sphere, eye_point) for cur_sphere in sphere_list]
     # circle_projections = (sphere, circle_projection, dist from eye to sphere)
 
-    # todo: sort circle_projections by sphere distance from eye
     sorted(circle_projections, key=lambda dist: dist[2])
+
+    total_pixels = width * height
+
+    before_time = datetime.datetime.now()
+    for i in range(1000):
+        cast_ray(data.Ray(eye_point, vm.vector_from_to(eye_point, sphere_list[0].center)),
+                 sphere_list, color, light, eye_point)
+    after_time = datetime.datetime.now()
+    delta_time = after_time - before_time
+    low_est = delta_time * int(total_pixels / 1000)
+    high_est = low_est * 2
+
+    print total_pixels, 'rays to cast on ', len(sphere_list), 'spheres'
+    print 'time estimate: ', str(low_est), "- ", str(high_est)
+    print 'start' + (' ' * 41) + 'done'
+    print ('|' + (' ' * 9)) * 6
 
     deltaX = float(max_x - min_x) / width
     deltaY = float(max_y - min_y) / height
     y = max_y
     x = min_x
+
     count = 0
     while y > min_y:
         while x < max_x:
@@ -58,21 +81,26 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
                 vectorToCast = vm.vector_from_to(eye_point, pointToCastThrough)
                 rayThroughRec = data.Ray(eye_point, vectorToCast)
 
-                # print >> sys.stderr, circle_hits
                 result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point, circle_hits[0][0])
 
-            print_scaled_pixel(result)
+            print_scaled_pixel(result, output_file)
 
             x += deltaX
             count += 1
+            if count % 1000:
+                if count > total_pixels / 50:
+                    count = 0
+                    sys.stderr.write('=')
         y -= deltaY
         x = min_x
+    sys.stderr.write('==\n')
 
 
-def print_scaled_pixel(color):
+def print_scaled_pixel(color, file):
     vm.color_bounds_check(color)
-    print int(color.red * vm.max_pixel_val), ' ', int(color.green * vm.max_pixel_val), ' ', int(
-        color.blue * vm.max_pixel_val), ' ',
+    scaled_color = vm.color_scale(color, max_pixel_val)
+    file.write(
+        str(int(scaled_color.red)) + ' ' + str(int(scaled_color.green)) + ' ' + str(int(scaled_color.blue)) + '\n')
 
 
 def compute_ambient_lighting(sphere, color):
@@ -156,33 +184,3 @@ def point_in_circle(circle, pt):
         return True
     else:
         return False
-
-  
-  
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
