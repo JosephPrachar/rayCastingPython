@@ -15,21 +15,21 @@ def process_args(args):
     while index < len(args):
         if args[index][0] == '-':
             index += 1
-            if args[index] == '-eye':
+            if args[index - 1] == '-eye':
                 eye_point = process_point(args[index:index+3], eye_point)
-                index += 3
+                index += 2
                 pass
-            elif args[index] == '-view':
+            elif args[index - 1] == '-view':
                 view = process_view(args[index:index+6], view)
-                index += 6
+                index += 5
                 pass
-            elif args[index] == '-light':
+            elif args[index - 1] == '-light':
                 point_light = process_light(args[index:index + 6], point_light)
-                index += 6
+                index += 5
                 pass
-            elif args[index] == '-ambient':
+            elif args[index - 1] == '-ambient':
                 ambient = process_color(args[index:index + 3], ambient)
-                index += 3
+                index += 2
                 pass
         else:
             index += 1
@@ -58,6 +58,7 @@ def process_view(nums, default):
         return float(nums[0]), float(nums[1]), float(nums[2]), float(nums[3]), float(nums[4]), float(nums[5])
     except:
         print >> sys.stderr, "Problem with input view settings, reverting to default value"
+        print >> sys.stderr, nums
         return default
 
 def input_spheres(file_name):
@@ -68,10 +69,13 @@ def input_spheres(file_name):
             count += 1 # gives a 1 based index instead of 0 based
             try:
                 strs = line.split(' ')
-                n = [float(a) for a in strs]
-                spheres.append(data.Sphere(data.Point(n[0], n[1], n[2]), n[3],
-                                           data.Color(n[4], n[5], n[6]),
-                                           data.Finish(n[7], n[8], n[9], n[10])))
+                if len(strs) == 11:
+                    n = [float(a) for a in strs]
+                    spheres.append(data.Sphere(data.Point(n[0], n[1], n[2]), n[3],
+                                   data.Color(n[4], n[5], n[6]),
+                                   data.Finish(n[7], n[8], n[9], n[10])))
+                else:
+                    print >> sys.stderr, "malformed sphere on line ", str(count) + " ... skipping"
             except:
                 print >> sys.stderr, "malformed sphere on line ", str(count) + " ... skipping"
     return spheres
