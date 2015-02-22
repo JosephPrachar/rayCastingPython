@@ -55,7 +55,7 @@ def process_light(nums, default):
 
 def process_view(nums, default):
     try:
-        return float(nums[0]), float(nums[1]), float(nums[2]), float(nums[3]), float(nums[4]), float(nums[5])
+        return float(nums[0]), float(nums[1]), float(nums[2]), float(nums[3]), int(nums[4]), int(nums[5])
     except:
         print >> sys.stderr, "Problem with input view settings, reverting to default value"
         print >> sys.stderr, nums

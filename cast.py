@@ -43,7 +43,7 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
              sphere_list, color, light, eye_point)
     after_time = datetime.datetime.now()
     delta_time = after_time - before_time
-    low_est = delta_time * (total_pixels / 1000)
+    low_est = delta_time * int(total_pixels / 1000)
     high_est = low_est * 2
 
     print total_pixels, 'rays to cast on ', len(sphere_list), 'spheres'
