@@ -1,8 +1,9 @@
-import math
 import unittest
+
 import data
 import cast
 import vector_math
+
 
 # global setup for cast_ray
 eye = data.Point(0.0, 0.0, -14.0)

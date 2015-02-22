@@ -1,6 +1,6 @@
-import data
-import funcs
 import math
+
+import data
 
 
 def scale_vector(vector, scalar):

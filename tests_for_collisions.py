@@ -1,7 +1,9 @@
 import math
 import unittest
+
 import data
 import collisions
+
 
 magicValue = math.sqrt(3.0 / 2.0 - math.sqrt(2))
 

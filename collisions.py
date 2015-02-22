@@ -1,5 +1,7 @@
-import vector_math
 import math
+
+import vector_math
+
 
 vm = vector_math
 
