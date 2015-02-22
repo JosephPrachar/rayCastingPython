@@ -28,7 +28,7 @@ def cast_ray(ray, sphere_list, color, light, eye):
         return color_add(ambientColor, pointLighting)
 
 
-def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light):
+def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light, output_file):
     deltaX = float(max_x - min_x) / width
     deltaY = float(max_y - min_y) / height
     y = max_y
@@ -41,7 +41,7 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
             rayThroughRec = data.Ray(eye_point, vectorToCast)
 
             result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point)
-            print_scaled_pixel(result)
+            print_scaled_pixel(result, output_file)
 
             x += deltaX
             count += 1
@@ -49,11 +49,11 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
         x = min_x
 
 
-def print_scaled_pixel(color):
+def print_scaled_pixel(color, file):
     color_bounds_check(color)
-    print int(color.red * max_pixel_val), ' ', int(color.green * max_pixel_val), ' ', int(
-        color.blue * max_pixel_val), ' ',
-
+    scaled_color = color_scale(color, max_pixel_val)
+    file.write(str(int(scaled_color.red)) + ' ' + str(int(scaled_color.green)) + ' ' + str(int(scaled_color.blue)) + '\n')
+    #print str(int(scaled_color.red)) + ' ' + str(int(scaled_color.green)) + ' ' + str(int(scaled_color.blue)) + '\n'
 
 def color_mult(one, two):
     return data.Color(one.red * two.red, one.green * two.green, one.blue * two.blue)
@@ -119,32 +119,4 @@ def compute_point_and_specular_light(intersection_point, sphere, light, sphere_l
 
     return color_add(pointColor, specColor)
     
-  
-  
-  
-  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  

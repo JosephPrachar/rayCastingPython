@@ -19,12 +19,14 @@ def main():
     width = 1024 / scale
     height = 768 / scale
 
-    # ppm p3 header
-    print "P3"
-    print width, " ", height
-    print 255
 
-    cast.cast_all_rays(-10, 10, -7.5, 7.5, width, height, eye, spheres, ambientColor, pointLight)
+    with open('image.ppm', 'w') as f:
+        # ppm p3 headerwith
+        f.write("P3\n")
+        f.write(str(width) + " " + str(height) + '\n')
+        f.write('255\n')
+
+        cast.cast_all_rays(-10, 10, -7.5, 7.5, width, height, eye, spheres, ambientColor, pointLight, f)
 
     end_time = datetime.datetime.now()
     diff_time = end_time - start_time
