@@ -7,7 +7,7 @@ import sys
 col = collisions
 vm = vector_math
 
-
+@profile
 def cast_ray(ray, sphere_list, color, light, eye, collision_sphere):
     hits = col.sphere_intersection_point_tuple(ray, collision_sphere)
 
@@ -16,7 +16,7 @@ def cast_ray(ray, sphere_list, color, light, eye, collision_sphere):
 
     return vm.color_add(ambientColor, pointLighting)
 
-
+@profile
 def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_list, color, light):
     circle_projections = [project_sphere_on_window(cur_sphere, eye_point) for cur_sphere in sphere_list]
     # circle_projections = (sphere, circle_projection, dist from eye to sphere)
@@ -61,7 +61,7 @@ def compute_ambient_lighting(sphere, color):
     scaledAC = vm.color_scale(ambientColor, sphere.finish.ambient)
     return scaledAC
 
-
+@profile
 def compute_point_and_specular_light(intersection_point, sphere, light, sphere_list, eye):
     # Point light
     normal = col.sphere_normal_at_point(sphere, intersection_point)  # N
@@ -99,7 +99,7 @@ def compute_point_and_specular_light(intersection_point, sphere, light, sphere_l
 
     return vm.color_add(pointColor, specColor)
 
-
+@profile
 def project_sphere_on_window(sphere, eye):
     # 1. find line from eye to center of sphere
     # 2. plug in z=0 to line to find center of circle on window
