@@ -10,6 +10,8 @@ vm = vector_math
 
 def cast_ray(ray, sphere_list, color, light, eye, collision_sphere):
     hits = col.sphere_intersection_point_tuple(ray, collision_sphere)
+    if hits[1] is None:
+        return data.Color(1,1,1)
 
     ambientColor = compute_ambient_lighting(hits[0], color)
     pointLighting = compute_point_and_specular_light(hits[1], hits[0], light, sphere_list, eye)
@@ -133,7 +135,7 @@ def point_in_circle(circle, pt):
     if (circle.center.z != pt.z):
         return False
 
-    if (vm.distance_point(circle.center, pt) <= circle.radius):
+    if (vm.distance_point(circle.center, pt) <= circle.radius + .01):
         return True
     else:
         return False
