@@ -3,6 +3,7 @@ import datetime
 import collisions
 import vector_math
 import data
+from utility import epsilon_equal
 
 
 # shorten libs
@@ -15,7 +16,7 @@ max_pixel_val = 255
 
 def cast_ray(ray, sphere_list, color, light, eye, collision_spheres):
     hits = col.find_intersection_points(collision_spheres, ray)
-    if len(hits)== 0:
+    if len(hits) == 0:
         return cast_ray_complete(ray, sphere_list, color, light, eye)
 
     small = 0
@@ -24,7 +25,6 @@ def cast_ray(ray, sphere_list, color, light, eye, collision_spheres):
         smallest = vm.length_vector(vm.difference_point(ray.pt, hits[small][1]))
         if cur < smallest:
             small = i
-
 
     ambientColor = compute_ambient_lighting(hits[small][0], color)
     pointLighting = compute_point_and_specular_light(hits[small][1], hits[small][0], light, sphere_list, eye)
@@ -88,7 +88,7 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
                 vectorToCast = vm.vector_from_to(eye_point, pointToCastThrough)
                 rayThroughRec = data.Ray(eye_point, vectorToCast)
 
-                result = cast_ray_complete(rayThroughRec, sphere_list, color, light, eye_point) #, circle_hits)
+                result = cast_ray(rayThroughRec, sphere_list, color, light, eye_point, circle_hits)
 
             print_scaled_pixel(result, output_file)
 
@@ -166,28 +166,28 @@ def project_sphere_on_window(sphere, eye):
     t = (-1 * eye.z) / eye_to_sphere.z
     eye_to_window = vm.scale_vector(eye_to_sphere, t)
     circle_center = vm.translate_point(eye, eye_to_window)
+    circle_center.z = 0
 
     # 3.
     dist_to_sphere = vm.length_vector(eye_to_sphere)
     radius = (sphere.radius * vm.length_vector(eye_to_window)) / dist_to_sphere
 
-    # DONE: todo: possible addition to function
-    # return a tuple of (sphere, circle, dist(eye, sphere))
-    # this will allow cast ray to not have to run find_intersection_points() to get the nearest sphere
-
     return sphere, data.Circle(circle_center, radius), dist_to_sphere
 
 
 def point_in_circles(circle_tuple, pt):
-    # return [(sphere, circle, dist) for (sphere, circle, dist) in circle_tuple if point_in_circle(circle, pt)]
-    return [tuple[0] for tuple in circle_tuple if point_in_circle(tuple[1], pt)]
-
+    spheres = []
+    for i in range(len(circle_tuple)):
+        if point_in_circle(circle_tuple[i][1], pt):
+            spheres.append(circle_tuple[i][0])
+    return spheres
 
 def point_in_circle(circle, pt):
-    if (circle.center.z != pt.z):
-        return False
+    if not epsilon_equal(circle.center.z, pt.z):
+        print >> sys.stderr, "Error: ", str(circle)
+        exit(1) # something went wrong in the math before this point and that will cause incorrect output
 
-    if (vm.distance_point(circle.center, pt) <= circle.radius + .1):
-        return True
+    if (vm.distance_point(circle.center, pt) <= circle.radius + .1):    # .1 gives a little forgiveness
+        return True                                                     # that the float values need
     else:
         return False
