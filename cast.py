@@ -35,23 +35,7 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
     deltaY = float(max_y - min_y) / height
     y = max_y
     x = min_x
-    total_pixels = width * height
 
-    before_time = datetime.datetime.now()
-    for i in range(1000):
-        cast_ray(data.Ray(eye_point, vm.vector_from_to(eye_point, sphere_list[0].center)),
-             sphere_list, color, light, eye_point)
-    after_time = datetime.datetime.now()
-    delta_time = after_time - before_time
-    low_est = delta_time * int(total_pixels / 1000)
-    high_est = low_est * 2
-
-    print total_pixels, 'rays to cast on ', len(sphere_list), 'spheres'
-    print 'time estimate: ', str(low_est), "- ", str(high_est)
-    print 'start' + (' ' * 41) + 'done'
-    print ('|' + (' ' * 9)) * 6
-
-    count = 0
     while y > min_y:
         while x < max_x:
             pointToCastThrough = data.Point(x, y, 0)
@@ -62,15 +46,9 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
             print_scaled_pixel(result, output_file)
 
             x += deltaX
-            count += 1
-            if count % 1000:
-                if count > total_pixels / 50:
-                    count = 0
-                    sys.stderr.write('=')
 
         y -= deltaY
         x = min_x
-    sys.stderr.write('==\n')
 
 
 def print_scaled_pixel(color, file):
