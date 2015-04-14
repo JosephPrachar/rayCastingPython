@@ -18,7 +18,7 @@ def main(argv):
 
     with open('image.ppm', 'w') as output_file:
         output_file.write('P3\n' + str(args[2][4]) + ' ' + str(args[2][5]) + '\n255\n')
-        # print 'P3\n' + str(args[2][4]) + ' ' + str(args[2][5]) + '\n255'
+
         cast.cast_all_rays(args[2][0], args[2][1], args[2][2], args[2][3], args[2][4], args[2][5],
                            args[1], args[0], args[4], args[3], output_file)
 

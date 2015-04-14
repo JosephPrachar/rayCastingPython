@@ -78,6 +78,7 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
     x = min_x
 
     count = 0
+
     while y > min_y:
         while x < max_x:
             circle_hits = point_in_circles(circle_projections, data.Point(x, y, 0))  # gets all intersecting spheres
@@ -100,7 +101,6 @@ def cast_all_rays(min_x, max_x, min_y, max_y, width, height, eye_point, sphere_l
                     sys.stderr.write('=')
         y -= deltaY
         x = min_x
-    sys.stderr.write('==\n')
 
 
 def print_scaled_pixel(color, file):
